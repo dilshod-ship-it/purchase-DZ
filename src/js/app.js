@@ -1,91 +1,82 @@
-import {Purchase} from './lib.js';
+const rootEl = document.getElementById('root'); 
 
-const rootEl = document.getElementById('root');
 rootEl.innerHTML = `
-	<form data-id="purchases-add-form">
-	<label for="purchases-name">Введите сумму</label>
-	<input id="purchases-name" data-id="purchases-summ" placeholder="Введите сумму" />
-
-	<label for="purchases-name-category">Категория</label>
-	<input id="purchases-name-category" data-id="purchases-category" placeholder="Категория" />
-	
-	<button id="add" data-action="add">Добавить</button>
-	</form>
-	<ul data-id="purchases-list"></ul>
-	<div data-id="purchases-total"></div>
+<form data-id="purchase-add-form" class="purchase-add-form">
+    <label for="purchase-input-amount" class="label">Сумма:</label>
+    <input id="purchase-input-amount" data-id="purchase-input-amount" class="input">
+    <label for="purchase-input-category" class="label">Категория:</label>
+    <input id purchase-input-category data-id="purchase-input-category" class="input">
+    <button data-action="purchase-add" class="button">Добавить</button>
+</form>
+<ul data-id="purchases-list" class="purchases-list"></ul>
+<div data-id="purchases-total" class="purchases-total">Общая сумма: 0</div>
 `;
 
-const purchasesAddFormEl = rootEl.querySelector('[data-id=purchases-add-form]');
+const purchaseAddFormEl = rootEl.querySelector('[data-id=purchase-add-form]'); 
 
-const purchasesTotalEl = rootEl.querySelector('[data-id=purchases-total]');
-
-const purchasesAddButtonEl = purchasesAddFormEl.querySelector('[data-action=add]');
-
-const purchasesCategoryEl = purchasesAddFormEl.querySelector('[data-id=purchases-category]');
-
-const purchasesSummEl = purchasesAddFormEl.querySelector('[data-id=purchases-summ]');
+const purchaseInputAmountEl = purchaseAddFormEl.querySelector('[data-id=purchase-input-amount]');
+const purchaseInputCategoryEl = purchaseAddFormEl.querySelector('[data-id=purchase-input-category]');
+const purchaseAddButtonEl = purchaseAddFormEl.querySelector('[data-action=purchase-add]');
 
 const purchasesListEl = rootEl.querySelector('[data-id=purchases-list]');
 
 let purchasesTotal = 0;
-purchasesAddButtonEl.onclick = evt => {
-	evt.preventDefault();
 
-	// itemEl.innerHTML = `${purchasesCategoryEl.value}`;
-	const value = purchasesSummEl.value;
-	const category = purchasesCategoryEl.value;
+purchaseAddButtonEl.onclick = evt => { 
+    
+    evt.preventDefault(); 
 
-	const purchase = new Purchase (value, category);
+    const value = purchaseInputAmountEl.value;
+    purchasesTotal += parseInt(value, 10); 
 
-	purchasesTotal +=parseInt(value, 10);
-	purchasesTotalEl.textContent = `Сумма: ${purchasesTotal}`;
+    const category = purchaseInputCategoryEl.value;
 
-	const purchaseEl = document.createElement('li');
-	purchaseEl.innerHTML = `
-		Покупка на сумму ${value}, в категории ${category} 
-		<button data-action="remove">x</button>
-		<button data-action="up">↑</button>
-		<button data-action="down">↓</button>
-	`;
+    purchasesTotalEl.textContent = `Сумма: ${purchasesTotal}`;
 
-	purchaseEl._purchase = purchase; 
+    const purchaseEl = document.createElement('li') 
+    purchaseEl.innerHTML = `
+    Покупка на сумму ${value}, в категории ${category}
+    <div class="blockButton">
+        <button data-action="up" class="up">↑</button>
+        <button data-action="down" class="down">↓</button>
+        <button data-action="remove" class="remove">x</button> 
+    </div>
+    `;
 
-	const purchaseRemoveButtonEl = purchaseEl.querySelector('[data-action=remove]');
-	purchaseRemoveButtonEl.onclick = () => {
+    const purchaseRemoveButtonE1 = purchaseEl.querySelector('[data-action=remove]');
+    purchaseRemoveButtonE1.onclick = () => {
+        purchaseEl.remove();
+        purchasesTotal -= value;
+        purchasesTotalEl.textContent = `Сумма: ${purchasesTotal}`;
+    }
 
-		purchaseEl.remove();
-		purchasesTotal -= value;
-
-	}
-
-	const purchaseUpButtonEl = purchaseEl.querySelector('[data-action=up]');
-	purchaseUpButtonEl.onclick= () =>
-	{
-		if(purchaseEl == purchaseEl.parentNode.firstChild) {
-			purchasesListEl.insertBefore(purchaseEl, null);
-		} else {
-			purchasesListEl.insertBefore(purchaseEl, purchaseEl.previousSibling);
-		};
-	}
-
-	 const purchaseDownButtonE1 = purchaseEl.querySelector('[data-action=down]');
-    purchaseDownButtonE1.onclick = () => 
+    const purchaseUpButtonEl = purchaseEl.querySelector('[data-action=up]');
+    purchaseUpButtonEl.onclick = () => 
     {
-        if(purchaseEl == purchaseEl.parentNode.lastChild)
-        {
-            purchasesListEl.insertBefore(purchaseEl, purchasesListEl.firstElementChild);
+        if (purchaseEl === purchasesListEl.firstElementChild){ 
+            purchasesListEl.insertBefore(purchaseEl, null); 
+        } else {
+            purchasesListEl.insertBefore(purchaseEl, purchaseEl.previousSibling); 
         }
-        else
-        {
-            purchasesListEl.insertBefore(purchaseEl.nextSibling,purchaseEl);
+    }
+
+    const purchaseDownButtonEl = purchaseEl.querySelector('[data-action=down]');
+    purchaseDownButtonEl.onclick = () => 
+    {
+        if (purchaseEl === purchasesListEl.lastElementChild) {
+            purchasesListEl.insertBefore(purchaseEl, purchasesListEl.firstElementChild)
+        } else {
+            purchasesListEl.insertBefore(purchaseEl.nextSibling, purchaseEl);
         }
-    };
+    }
 
-	purchasesListEl.insertBefore(purchaseEl, purchasesListEl.firstElementChild);
 
-	purchasesSummEl.value = '';
-	purchasesCategoryEl.value = '';
-	purchasesSummEl.focus(); 
+    purchasesListEl.insertBefore(purchaseEl, purchasesListEl.firstElementChild);
 
-	console.dir(purchasesListEl.children);
+    purchaseInputAmountEl.value = '';
+    purchaseInputCategoryEl.value = '';
+
+    purchaseInputAmountEl.focus();
 };
+
+const purchasesTotalEl = rootEl.querySelector('[data-id=purchases-total]');
