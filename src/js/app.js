@@ -56,7 +56,7 @@ purchaseAddButtonEl.onclick = evt => {
         if (purchaseEl === purchasesListEl.firstElementChild){ 
             purchasesListEl.insertBefore(purchaseEl, null); 
         } else {
-            purchasesListEl.insertBefore(purchaseEl, purchaseEl.previousSibling); 
+            purchasesListEl.insertBefore(purchaseEl, purchaseEl.previousElementSibling); 
         }
     }
 
@@ -66,7 +66,7 @@ purchaseAddButtonEl.onclick = evt => {
         if (purchaseEl === purchasesListEl.lastElementChild) {
             purchasesListEl.insertBefore(purchaseEl, purchasesListEl.firstElementChild)
         } else {
-            purchasesListEl.insertBefore(purchaseEl.nextSibling, purchaseEl);
+            purchasesListEl.insertBefore(purchaseEl.nextElementSibling, purchaseEl);
         }
     }
 
